@@ -1,10 +1,39 @@
 # Used Car Price Prediction
 
-Machine learning project for predicting used car prices using classical regression algorithms.
+Machine learning project for predicting used Ford car prices using classical regression algorithms.
 
 ## Dataset
 
-100,000 UK Used Car Data Set from Kaggle.
+The project uses the Kaggle "100,000 UK Used Car Data set".  
+Current work is focused on the Ford dataset:
+
+- Raw data: `data/raw/ford.csv`
+- Processed data: `data/processed/ford_cleaned.csv`
+
+## Project Structure
+
+```text
+used-car-price-prediction/
+├── data/
+│   ├── raw/
+│   └── processed/
+├── notebooks/
+│   ├── 01_eda.ipynb
+│   ├── 02_preprocessing.ipynb
+│   └── 03_model_training.ipynb
+├── src/
+│   ├── data_preprocessing.py
+│   ├── train_models.py
+│   ├── evaluate_models.py
+│   ├── model_tuning.py
+│   └── visualization.py
+├── models/
+├── results/
+│   ├── plots/
+│   └── metrics/
+├── requirements.txt
+└── README.md
+```
 
 ## Technologies
 
@@ -15,20 +44,87 @@ Machine learning project for predicting used car prices using classical regressi
 - matplotlib
 - seaborn
 - Jupyter
+- joblib
 
-## Phase 2: Data Preparation and EDA
+## Data Analysis and Preprocessing
 
-This phase focuses on exploratory data analysis and preprocessing for a classical machine learning regression project.
+Exploratory data analysis is completed in `notebooks/01_eda.ipynb`.
 
-- Dataset used: Kaggle "100,000 UK Used Car Data set", currently using `data/raw/ford.csv`.
-- EDA completed in `notebooks/01_eda.ipynb`: dataset inspection, missing values, duplicates, target variable analysis, distribution plots, relationship plots, category-based average price plots, and numeric correlation heatmap.
-- Preprocessing completed in `notebooks/02_preprocessing.ipynb`: duplicate removal, safe missing-value handling, `car_age = 2026 - year` feature creation, categorical encoding, train/test split, and numeric scaling setup.
-- Cleaned data is saved to `data/processed/ford_cleaned.csv`.
-- The project uses classical machine learning methods for used car price regression. No deep learning, API, frontend, or deployment logic is included in this phase.
+Main EDA steps:
 
-## Planned Classical ML Models
+- basic dataset inspection
+- missing value analysis
+- duplicate row analysis
+- target variable analysis
+- price, mileage, and year distributions
+- price relationships with mileage, year, and engine size
+- average price by transmission and fuel type
+- correlation heatmap for numeric columns
+
+Preprocessing is completed in `notebooks/02_preprocessing.ipynb`.
+
+Main preprocessing steps:
+
+- duplicate row removal
+- safe missing value handling
+- `car_age = 2026 - year` feature creation
+- categorical encoding setup
+- train/test split
+- numeric scaling setup
+- saving cleaned data to `data/processed/ford_cleaned.csv`
+
+## Machine Learning
+
+The project uses classical machine learning methods only.
+
+Trained regression models:
 
 - Linear Regression
 - Decision Tree Regressor
 - Random Forest Regressor
 - Gradient Boosting Regressor
+
+Model evaluation metrics:
+
+- MAE
+- RMSE
+- R2 Score
+
+Random Forest hyperparameter tuning is implemented with `GridSearchCV` in `src/model_tuning.py`.
+
+## Results
+
+Generated results are saved in:
+
+- model comparison: `results/metrics/model_comparison.csv`
+- best trained model: `models/best_model.pkl`
+- plots: `results/plots/`
+
+Model visualizations include:
+
+- actual vs predicted prices
+- residual distribution
+- feature importance, if supported by the selected model
+
+## How to Run
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run notebooks in order:
+
+```text
+01_eda.ipynb
+02_preprocessing.ipynb
+03_model_training.ipynb
+```
+
+Alternatively, preprocessing functions can be run from:
+
+```bash
+python src/data_preprocessing.py
+```
+
