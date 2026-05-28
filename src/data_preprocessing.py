@@ -13,7 +13,7 @@ def clean_data(df):
     cleaned_df = cleaned_df.drop_duplicates()
 
     numeric_columns = cleaned_df.select_dtypes(include=["number"]).columns
-    categorical_columns = cleaned_df.select_dtypes(include=["object"]).columns
+    categorical_columns = cleaned_df.columns.difference(numeric_columns)
 
     for column in numeric_columns:
         cleaned_df[column] = cleaned_df[column].fillna(cleaned_df[column].median())
