@@ -149,6 +149,26 @@ Example response:
 }
 ```
 
+## Docker
+
+Build:
+
+```bash
+docker build -t used-car-price-prediction .
+```
+
+Run:
+
+```bash
+docker run -p 8000:8000 used-car-price-prediction
+```
+
+Swagger documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
 ## How to Run
 
 Install dependencies:
