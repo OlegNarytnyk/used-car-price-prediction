@@ -26,7 +26,10 @@ used-car-price-prediction/
 │   ├── train_models.py
 │   ├── evaluate_models.py
 │   ├── model_tuning.py
-│   └── visualization.py
+│   ├── visualization.py
+│   └── api/
+│       ├── main.py
+│       └── schemas.py
 ├── models/
 ├── results/
 │   ├── plots/
@@ -45,6 +48,9 @@ used-car-price-prediction/
 - seaborn
 - Jupyter
 - joblib
+- FastAPI
+- Uvicorn
+- Pydantic
 
 ## Data Analysis and Preprocessing
 
@@ -106,6 +112,43 @@ Model visualizations include:
 - residual distribution
 - feature importance, if supported by the selected model
 
+## FastAPI Prediction Service
+
+Run the API:
+
+```bash
+python -m uvicorn src.api.main:app --reload
+```
+
+Swagger documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Example request body for `POST /predict`:
+
+```json
+{
+  "model": "Fiesta",
+  "year": 2018,
+  "transmission": "Manual",
+  "mileage": 40000,
+  "fuelType": "Petrol",
+  "tax": 145,
+  "mpg": 58.9,
+  "engineSize": 1.0
+}
+```
+
+Example response:
+
+```json
+{
+  "predicted_price": 10500.25
+}
+```
+
 ## How to Run
 
 Install dependencies:
@@ -127,4 +170,3 @@ Alternatively, preprocessing functions can be run from:
 ```bash
 python src/data_preprocessing.py
 ```
-
