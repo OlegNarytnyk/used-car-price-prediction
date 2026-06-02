@@ -1,14 +1,14 @@
 # Used Car Price Prediction
 
-Machine learning project for predicting used Ford car prices using classical regression algorithms.
+Machine learning project for predicting used car prices using classical regression algorithms.
 
 ## Dataset
 
-The project uses the Kaggle "100,000 UK Used Car Data set".  
-Current work is focused on the Ford dataset:
+The project uses the Kaggle "100,000 UK Used Car Data set".
 
 - Raw data: `data/raw/ford.csv`
 - Processed data: `data/processed/ford_cleaned.csv`
+- Combined processed data: `data/processed/all_brands_cleaned.csv`
 
 ## Project Structure
 
@@ -98,12 +98,47 @@ Model evaluation metrics:
 
 Random Forest hyperparameter tuning is implemented with `GridSearchCV` in `src/model_tuning.py`.
 
+## Multi-brand Dataset Support
+
+Supported raw datasets:
+
+- `audi.csv` -> Audi
+- `bmw.csv` -> BMW
+- `ford.csv` -> Ford
+- `merc.csv` -> Mercedes
+- `skoda.csv` -> Skoda
+- `toyota.csv` -> Toyota
+- `vw.csv` -> Volkswagen
+- `hyundi.csv` -> Hyundai
+
+Build the combined cleaned dataset:
+
+```bash
+python src/build_multibrand_dataset.py
+```
+
+Train on all supported brands:
+
+```bash
+python src/train_models.py --dataset all
+```
+
+Train on Ford only:
+
+```bash
+python src/train_models.py --dataset ford
+```
+
+The selected best model is also saved to `models/best_model.pkl` for API compatibility.
+
 ## Results
 
 Generated results are saved in:
 
 - model comparison: `results/metrics/model_comparison.csv`
 - best trained model: `models/best_model.pkl`
+- all-brands best trained model: `models/best_model_all_brands.pkl`
+- Ford-only best trained model: `models/best_model_ford.pkl`
 - plots: `results/plots/`
 
 Model visualizations include:
@@ -130,6 +165,7 @@ Example request body for `POST /predict`:
 
 ```json
 {
+  "brand": "Ford",
   "model": "Fiesta",
   "year": 2018,
   "transmission": "Manual",
@@ -139,6 +175,13 @@ Example request body for `POST /predict`:
   "mpg": 58.9,
   "engineSize": 1.0
 }
+```
+
+Metadata endpoints:
+
+```text
+GET /brands
+GET /models/{brand}
 ```
 
 Example response:
@@ -189,4 +232,10 @@ Alternatively, preprocessing functions can be run from:
 
 ```bash
 python src/data_preprocessing.py
+```
+
+Build the multi-brand processed dataset:
+
+```bash
+python src/build_multibrand_dataset.py
 ```

@@ -3,8 +3,47 @@ from pathlib import Path
 import pandas as pd
 
 
+SUPPORTED_BRAND_DATASETS = {
+    "audi.csv": "Audi",
+    "bmw.csv": "BMW",
+    "ford.csv": "Ford",
+    "merc.csv": "Mercedes",
+    "skoda.csv": "Skoda",
+    "toyota.csv": "Toyota",
+    "vw.csv": "Volkswagen",
+    "hyundi.csv": "Hyundai",
+}
+
+
 def load_data(path):
     return pd.read_csv(path)
+
+
+def load_brand_dataset(file_path, brand_name):
+    df = load_data(file_path)
+    df["brand"] = brand_name
+    return df
+
+
+def get_available_brand_datasets(raw_data_dir="data/raw"):
+    raw_data_dir = Path(raw_data_dir)
+    return [
+        (raw_data_dir / file_name, brand_name)
+        for file_name, brand_name in SUPPORTED_BRAND_DATASETS.items()
+        if (raw_data_dir / file_name).exists()
+    ]
+
+
+def load_all_brand_datasets(raw_data_dir="data/raw"):
+    datasets = [
+        load_brand_dataset(file_path, brand_name)
+        for file_path, brand_name in get_available_brand_datasets(raw_data_dir)
+    ]
+
+    if not datasets:
+        raise FileNotFoundError(f"No supported brand CSV files found in {raw_data_dir}")
+
+    return pd.concat(datasets, ignore_index=True)
 
 
 def clean_data(df):

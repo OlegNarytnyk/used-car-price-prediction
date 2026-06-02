@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class CarInput(BaseModel):
+    brand: str
     model: str
     year: int
     transmission: str
