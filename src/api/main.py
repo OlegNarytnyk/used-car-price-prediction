@@ -12,6 +12,13 @@ MODEL_PATH = PROJECT_ROOT / "models" / "best_model.pkl"
 ALL_BRANDS_DATA_PATH = PROJECT_ROOT / "data" / "processed" / "all_brands_cleaned.csv"
 FORD_DATA_PATH = PROJECT_ROOT / "data" / "processed" / "ford_cleaned.csv"
 CATEGORICAL_COLUMNS = ["brand", "model", "transmission", "fuelType"]
+NUMERIC_METADATA_COLUMNS = {
+    "year_range": "year",
+    "mileage_range": "mileage",
+    "tax_range": "tax",
+    "mpg_range": "mpg",
+    "engine_size_range": "engineSize",
+}
 
 
 app = FastAPI(
@@ -79,20 +86,92 @@ def get_supported_brands(processed_df):
     return sorted(processed_df["brand"].dropna().astype(str).unique().tolist())
 
 
+def find_case_insensitive_match(values, value):
+    normalized_value = value.strip().lower()
+
+    for existing_value in values:
+        if str(existing_value).strip().lower() == normalized_value:
+            return existing_value
+
+    return None
+
+
 def get_models_for_brand(processed_df, brand):
     if "model" not in processed_df.columns:
         return []
 
     if "brand" in processed_df.columns:
-        brand_values = processed_df["brand"].dropna().astype(str)
-        matched_brands = brand_values[brand_values.str.lower() == brand.strip().lower()].unique()
+        matched_brand = find_case_insensitive_match(get_supported_brands(processed_df), brand)
 
-        if len(matched_brands) == 0:
+        if matched_brand is None:
             return []
 
-        processed_df = processed_df[processed_df["brand"].astype(str) == matched_brands[0]]
+        processed_df = processed_df[processed_df["brand"].astype(str) == matched_brand]
 
     return sorted(processed_df["model"].dropna().astype(str).unique().tolist())
+
+
+def get_unique_values(processed_df, column):
+    if column not in processed_df.columns:
+        return []
+
+    return sorted(processed_df[column].dropna().astype(str).unique().tolist())
+
+
+def get_numeric_range(processed_df, column):
+    if column not in processed_df.columns:
+        return {"min": None, "max": None}
+
+    values = pd.to_numeric(processed_df[column], errors="coerce").dropna()
+
+    if values.empty:
+        return {"min": None, "max": None}
+
+    return {"min": values.min().item(), "max": values.max().item()}
+
+
+def build_metadata(processed_df):
+    brands = get_supported_brands(processed_df)
+
+    metadata = {
+        "brands": brands,
+        "models_by_brand": {
+            brand: get_models_for_brand(processed_df, brand)
+            for brand in brands
+        },
+        "transmissions": get_unique_values(processed_df, "transmission"),
+        "fuel_types": get_unique_values(processed_df, "fuelType"),
+    }
+
+    for range_name, column in NUMERIC_METADATA_COLUMNS.items():
+        metadata[range_name] = get_numeric_range(processed_df, column)
+
+    return metadata
+
+
+def validate_prediction_input(car_input, processed_df):
+    brands = get_supported_brands(processed_df)
+    matched_brand = find_case_insensitive_match(brands, car_input.brand)
+
+    if matched_brand is None:
+        raise HTTPException(status_code=400, detail=f"Unsupported brand: {car_input.brand}")
+
+    models = get_models_for_brand(processed_df, matched_brand)
+    matched_model = find_case_insensitive_match(models, car_input.model)
+
+    if matched_model is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported model '{car_input.model}' for brand '{matched_brand}'",
+        )
+
+    transmissions = get_unique_values(processed_df, "transmission")
+    if find_case_insensitive_match(transmissions, car_input.transmission) is None:
+        raise HTTPException(status_code=400, detail=f"Unsupported transmission: {car_input.transmission}")
+
+    fuel_types = get_unique_values(processed_df, "fuelType")
+    if find_case_insensitive_match(fuel_types, car_input.fuelType) is None:
+        raise HTTPException(status_code=400, detail=f"Unsupported fuel type: {car_input.fuelType}")
 
 
 def prepare_input(car_input, processed_df, model):
@@ -124,6 +203,7 @@ def predict(car_input: CarInput):
     processed_df = load_processed_data()
 
     try:
+        validate_prediction_input(car_input, processed_df)
         input_df = prepare_input(car_input, processed_df, model)
         predicted_price = model.predict(input_df)[0]
         return PredictionResponse(predicted_price=round(float(predicted_price), 2))
@@ -142,4 +222,15 @@ def brands():
 @app.get("/models/{brand}")
 def models(brand: str):
     processed_df = load_processed_data()
-    return get_models_for_brand(processed_df, brand)
+    matched_brand = find_case_insensitive_match(get_supported_brands(processed_df), brand)
+
+    if matched_brand is None:
+        raise HTTPException(status_code=404, detail=f"Unsupported brand: {brand}")
+
+    return get_models_for_brand(processed_df, matched_brand)
+
+
+@app.get("/metadata")
+def metadata():
+    processed_df = load_processed_data()
+    return build_metadata(processed_df)

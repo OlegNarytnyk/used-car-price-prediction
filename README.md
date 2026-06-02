@@ -180,6 +180,7 @@ Example request body for `POST /predict`:
 Metadata endpoints:
 
 ```text
+GET /metadata
 GET /brands
 GET /models/{brand}
 ```
@@ -191,6 +192,27 @@ Example response:
   "predicted_price": 10500.25
 }
 ```
+
+## Prediction Input Validation
+
+The prediction API validates input before calling the trained model.
+
+- `brand`, `model`, `transmission`, and `fuelType` must not be empty.
+- `year` must be between 1990 and 2026.
+- `mileage` and `tax` must be greater than or equal to 0.
+- `mpg` and `engineSize` must be greater than 0.
+- Brand, model, transmission, and fuel type are validated against the processed dataset.
+- Models are validated per brand, so a Ford model cannot be submitted as a BMW model.
+
+Dropdown-ready metadata is available from:
+
+```text
+GET /metadata
+GET /brands
+GET /models/{brand}
+```
+
+`GET /metadata` returns supported brands, models grouped by brand, transmissions, fuel types, and numeric ranges from the processed dataset.
 
 ## Docker
 
