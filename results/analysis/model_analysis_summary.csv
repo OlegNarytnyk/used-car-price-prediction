@@ -1,0 +1,41 @@
+metric,value
+dataset_path,data/processed/all_brands_cleaned.csv
+rows,84454
+test_rows,16891
+MAE,1219.8236877222398
+RMSE,2060.7661240454195
+R2,0.9600211297065261
+mean_residual,7.6455944831715925
+median_absolute_error,777.46
+average_prediction_error,1219.8236877222398
+prediction_bias,model tends to underpredict prices
+top_feature_1,engineSize
+top_feature_1_importance,0.26251757643514523
+top_feature_2,transmission_Manual
+top_feature_2_importance,0.22988495594571057
+top_feature_3,year
+top_feature_3_importance,0.1323725582829466
+top_feature_4,car_age
+top_feature_4_importance,0.11531515892052462
+top_feature_5,mpg
+top_feature_5_importance,0.10153115537301265
+top_feature_6,mileage
+top_feature_6_importance,0.04200132767590814
+top_feature_7,tax
+top_feature_7_importance,0.02013420497622636
+top_feature_8,brand_Audi
+top_feature_8_importance,0.005995575720619992
+top_feature_9,model_ A Class
+top_feature_9_importance,0.005501648433618393
+top_feature_10,brand_Mercedes
+top_feature_10_importance,0.004439412161284127
+top_feature_11,model_ GLC Class
+top_feature_11_importance,0.003979133291456881
+top_feature_12,model_ S Class
+top_feature_12_importance,0.0037528256844182916
+top_feature_13,model_ i8
+top_feature_13_importance,0.0027701360417957156
+top_feature_14,model_ X7
+top_feature_14_importance,0.002654443477431011
+top_feature_15,model_ C Class
+top_feature_15_importance,0.002619753116290158

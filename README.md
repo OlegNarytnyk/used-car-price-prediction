@@ -214,6 +214,32 @@ GET /models/{brand}
 
 `GET /metadata` returns supported brands, models grouped by brand, transmissions, fuel types, and numeric ranges from the processed dataset.
 
+## Model Explainability and Prediction Analysis
+
+Run model analysis:
+
+```bash
+python src/model_analysis.py
+```
+
+The analysis explains which input features influence the predicted car price the most. For example, mileage and car age usually matter because older cars with more distance driven tend to lose value. Engine size can affect price because larger or more powerful cars often belong to higher-value market segments. Brand and model are also important because different manufacturers and vehicle models have different market demand.
+
+Residual analysis compares the real price with the predicted price. A residual is the difference between actual price and predicted price. If residuals are mostly close to zero, the model is usually making accurate predictions. If residuals are often positive or negative, the model may be underpredicting or overpredicting.
+
+The actual vs predicted plot shows how close model predictions are to real prices. Points near the diagonal line indicate better predictions.
+
+Generated analysis files:
+
+- `results/analysis/model_analysis_summary.csv`
+- `results/analysis/largest_prediction_errors.csv`
+
+Generated plots:
+
+- `results/plots/explainability_feature_importance.png`
+- `results/plots/explainability_permutation_importance.png`
+- `results/plots/prediction_actual_vs_predicted.png`
+- `results/plots/prediction_residual_distribution.png`
+
 ## Frontend Demo
 
 The project includes a minimal HTML/CSS/JavaScript demo interface served directly by FastAPI.
