@@ -214,6 +214,31 @@ GET /models/{brand}
 
 `GET /metadata` returns supported brands, models grouped by brand, transmissions, fuel types, and numeric ranges from the processed dataset.
 
+## Frontend Demo
+
+The project includes a minimal HTML/CSS/JavaScript demo interface for the local FastAPI service.
+
+Start the backend:
+
+```bash
+python -m uvicorn src.api.main:app --reload
+```
+
+Start the frontend:
+
+```bash
+cd frontend
+python -m http.server 5500
+```
+
+Open:
+
+```text
+http://127.0.0.1:5500
+```
+
+The frontend loads brands and models from the local API, sends prediction requests to `POST /predict`, and displays the predicted price or API validation errors.
+
 ## Docker
 
 Build:
