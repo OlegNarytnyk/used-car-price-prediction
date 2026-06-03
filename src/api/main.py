@@ -4,11 +4,14 @@ import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from src.api.schemas import CarInput, PredictionResponse
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+FRONTEND_DIR = PROJECT_ROOT / "frontend"
 MODEL_PATH = PROJECT_ROOT / "models" / "best_model.pkl"
 ALL_BRANDS_DATA_PATH = PROJECT_ROOT / "data" / "processed" / "all_brands_cleaned.csv"
 FORD_DATA_PATH = PROJECT_ROOT / "data" / "processed" / "ford_cleaned.csv"
@@ -36,6 +39,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 
 def load_model():
@@ -203,9 +207,22 @@ def prepare_input(car_input, processed_df, model):
     return input_df.reindex(columns=training_columns, fill_value=0)
 
 
-@app.get("/")
+@app.get("/", response_class=FileResponse)
 def root():
-    return {"message": "Used Car Price Prediction API is running"}
+    index_path = FRONTEND_DIR / "index.html"
+
+    if not index_path.exists():
+        raise HTTPException(status_code=500, detail="Frontend file not found: frontend/index.html")
+
+    return FileResponse(index_path)
+
+
+@app.get("/health")
+def health():
+    return {
+        "status": "ok",
+        "message": "Used Car Price Prediction API is running",
+    }
 
 
 @app.post("/predict", response_model=PredictionResponse)

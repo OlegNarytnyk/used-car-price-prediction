@@ -1,5 +1,3 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
-
 const form = document.getElementById("prediction-form");
 const brandSelect = document.getElementById("brand");
 const modelSelect = document.getElementById("model");
@@ -44,7 +42,7 @@ function populateSelect(selectElement, values, preferredValue) {
 }
 
 async function fetchJson(path, options) {
-  const response = await fetch(`${API_BASE_URL}${path}`, options);
+  const response = await fetch(path, options);
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {

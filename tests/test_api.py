@@ -75,6 +75,34 @@ def test_valid_prediction_input_passes(api_client):
     assert response.json() == {"predicted_price": 12345.67}
 
 
+def test_root_returns_frontend_html(api_client):
+    response = api_client.get("/")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Used Car Price Prediction" in response.text
+
+
+def test_static_frontend_files_are_served(api_client):
+    css_response = api_client.get("/static/styles.css")
+    js_response = api_client.get("/static/app.js")
+
+    assert css_response.status_code == 200
+    assert js_response.status_code == 200
+    assert "text/css" in css_response.headers["content-type"]
+    assert "javascript" in js_response.headers["content-type"]
+
+
+def test_health_endpoint_returns_status_ok(api_client):
+    response = api_client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "ok",
+        "message": "Used Car Price Prediction API is running",
+    }
+
+
 def test_invalid_brand_returns_error(api_client):
     payload = valid_payload()
     payload["brand"] = "Tesla"

@@ -216,7 +216,7 @@ GET /models/{brand}
 
 ## Frontend Demo
 
-The project includes a minimal HTML/CSS/JavaScript demo interface for the local FastAPI service.
+The project includes a minimal HTML/CSS/JavaScript demo interface served directly by FastAPI.
 
 Start the backend:
 
@@ -224,22 +224,22 @@ Start the backend:
 python -m uvicorn src.api.main:app --reload
 ```
 
-Start the frontend:
-
-```bash
-cd frontend
-python -m http.server 5500
-```
-
 Open:
 
 ```text
-http://127.0.0.1:5500
+http://127.0.0.1:8000
 ```
 
-The frontend loads brands and models from the local API, sends prediction requests to `POST /predict`, and displays the predicted price or API validation errors.
+The frontend loads brands and models from the same FastAPI app, sends prediction requests to `POST /predict`, and displays the predicted price or API validation errors.
 
 ## Docker
+
+The Docker container serves both the FastAPI API and the static frontend demo.
+
+Make sure the processed data and trained model files exist before building the image:
+
+- `data/processed/all_brands_cleaned.csv` or `data/processed/ford_cleaned.csv`
+- `models/best_model.pkl`
 
 Build:
 
@@ -253,10 +253,22 @@ Run:
 docker run -p 8000:8000 used-car-price-prediction
 ```
 
-Swagger documentation:
+Open frontend:
+
+```text
+http://127.0.0.1:8000
+```
+
+Swagger:
 
 ```text
 http://127.0.0.1:8000/docs
+```
+
+Health check:
+
+```text
+http://127.0.0.1:8000/health
 ```
 
 ## How to Run
